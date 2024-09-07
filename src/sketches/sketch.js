@@ -1,13 +1,19 @@
 const size = 20;
-const nVectors = 20;
+const nVectors = 12;
+const strokeWeight = 10;
+const colours = [
+  [255, 0, 0], 
+  "white"
+];
 
 class Vec {
-  constructor(x, y, space){
+  constructor(x, y, space, colour){
     this.x = x;
     this.y = y;
     this.randomiseDir();
     this.space = space;
     this.isStuck = false;
+    this.colour = colour;
   }
 
   isPosValid(x, y){
@@ -45,28 +51,32 @@ class Vec {
     this.dir = [-1 + Math.floor(Math.random() * 3), -1 + Math.floor(Math.random() * 3)];
   }
 
+  
+
   moveInDir(){
     const oldX = this.x;
     const oldY = this.y;
     this.x = this.x + this.dir[0];
     this.y = this.y + this.dir[1];
-    return [oldX, oldY, this.x, this.y];
+    return [oldX, oldY, this.x, this.y, this.colour];
   }
 
   move(){
-    if(this.isPosValid(this.x + this.dir[0], this.y + this.dir[1])){
-      return this.moveInDir();
-    }
-    else {
-      let rotateCount = 0;
-      while(rotateCount < 8){
-        this.rotate45Clockwise();
-        if(this.isPosValid(this.x + this.dir[0], this.y + this.dir[1])){
-          return this.moveInDir();
-        }
-        rotateCount++;
+    if(!this.isStuck){
+      if(this.isPosValid(this.x + this.dir[0], this.y + this.dir[1])){
+        return this.moveInDir();
       }
-      this.isStuck = true;
+      else {
+        let rotateCount = 0;
+        while(rotateCount < 8){
+          this.rotate45Clockwise();
+          if(this.isPosValid(this.x + this.dir[0], this.y + this.dir[1])){
+            return this.moveInDir();
+          }
+          rotateCount++;
+        }
+        this.isStuck = true;
+      }
     }
   }
 }
@@ -91,10 +101,14 @@ export default function sketch(p){
 
   p.setup = () => {
     p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+    let coloursIndex = 0;
     for(let i=0; i<nVectors; i++){
       const randX = Math.floor(Math.random() * size);
       const randY = Math.floor(Math.random() * size);
-      vectors[i] = new Vec(randX, randY, space);
+      vectors[i] = new Vec(randX, randY, space, colours[coloursIndex]);
+      console.log(coloursIndex)
+      coloursIndex++;
+      coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
     }
   }
 
@@ -102,10 +116,11 @@ export default function sketch(p){
   
   p.draw = () => {
     p.background(0);
-    p.stroke("white");
-    p.strokeWeight(1);
+    p.strokeWeight(strokeWeight);
 
     for(const line of lines){
+      console.log(line[4])
+      p.stroke(line[4]);
       p.line(
         indexToPos(line[0]), 
         indexToPos(line[1]), 
