@@ -1,7 +1,6 @@
 import Vec from "./Vec";
 
-const size = 21;
-const nVectors = 4;
+const size = 10;
 const strokeWeight = 5;
 const radius = 1;
 const colours = [
@@ -59,16 +58,6 @@ export default function sketch(p) {
     p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
     let coloursIndex = 0;
 
-    // Central start position vectors
-    // const centreX = Math.round(space.length / 2) - 1;
-    // const centreY = Math.round(space[0].length / 2) - 1;
-    // for(let i=0; i<nVectors; i++){
-    //   let dir = [0, -1];
-    //   vectors[i] = new Vec(centreX, centreY, dir, space, colours[coloursIndex]);
-    //   coloursIndex++;
-    //   coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
-    // }
-
     // Circular start position vectors
     const startIndexes = createCircularStartIndexes(space, radius);
     for(let i=0; i<startIndexes.length; i++){
@@ -77,15 +66,6 @@ export default function sketch(p) {
       coloursIndex++;
       coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
     }
-
-    // Random start position vectors
-    // for(let i=0; i<nVectors; i++){
-    //   const randX = Math.floor(Math.random() * size);
-    //   const randY = Math.floor(Math.random() * size);
-    //   vectors[i] = new Vec(randX, randY, space, colours[coloursIndex]);
-    //   coloursIndex++;
-    //   coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
-    // }
   }
 
   p.windowResized = () => p.resizeCanvas(p.windowWidth, p.windowHeight);

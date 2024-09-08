@@ -1,3 +1,5 @@
+const directions = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]];
+
 export default class Vec {
     constructor(id, x, y, space, colour, dir=null){
       this.id = id;
@@ -19,9 +21,12 @@ export default class Vec {
     }
 
     isDiagonalLineAhead(){ 
-      const coordToCheck1 = [this.x + this.dir[0], this.y];
-      const coordToCheck2 = [this.x, this.y + this.dir[1]];
-      return this.space[coordToCheck1[0]][coordToCheck1[1]] != 0 && this.space[coordToCheck2[0]][coordToCheck2[1]];
+      const spaceToCheck1 = this.space[this.x + this.dir[0]][this.y];
+      const spaceToCheck2 = this.space[this.x][this.y + this.dir[1]];
+      const space1IsTaken = spaceToCheck1 != 0;
+      const space2IsTaken = spaceToCheck2 != 0;
+      const spacesAreSameVectors = spaceToCheck1 == spaceToCheck2;
+      return space1IsTaken && space2IsTaken && spacesAreSameVectors;
     }
   
     isNextPosValid(){
@@ -41,29 +46,12 @@ export default class Vec {
     }
   
     rotate45Clockwise(){ // TO-DO: find a neat formula for this
-      if (this.dir[0] == 0 && this.dir[1] == 1){
-        this.dir = [1, 1];
-      } else if (this.dir[0] == 1 & this.dir[1] == 1){
-        this.dir = [1, 0];
-      } else if (this.dir[0] == 1 & this.dir[1] == 0){
-        this.dir = [1, -1];
-      } else if (this.dir[0] == 1 & this.dir[1] == -1){
-        this.dir = [0, -1];
-      } else if (this.dir[0] == 0 & this.dir[1] == -1){
-        this.dir = [-1, -1];
-      } else if (this.dir[0] == -1 & this.dir[1] == -1){
-        this.dir = [-1, 0];
-      } else if (this.dir[0] == -1 & this.dir[1] == 0){
-        this.dir = [-1, 1];
-      } else if (this.dir[0] == -1 & this.dir[1] == 1){
-        this.dir = [0, 1];
-      } else {
-        this.dir = [0, 0];
-      }
+      this.dir = directions[(directions.indexOf(this.dir) + 1) % directions.length];
     }
   
     randomiseDir(){
       this.dir = [-1 + Math.floor(Math.random() * 3), -1 + Math.floor(Math.random() * 3)];
+      if(this.dir == [0, 0]) this.randomiseDir();
     }
   
     moveInDir(){
