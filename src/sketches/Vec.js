@@ -1,20 +1,43 @@
 export default class Vec {
-    constructor(x, y, space, colour){
+    constructor(id, x, y, space, colour, dir=null){
+      this.id = id;
       this.x = x;
       this.y = y;
-      this.randomiseDir();
       this.space = space;
-      this.isStuck = false;
+      this.space[x][y] = id;
       this.colour = colour;
+      if(dir){
+        this.dir = dir;
+      } else {
+        this.randomiseDir();
+      }
+      this.isStuck = false;
+    }
+
+    isDirectionDiagonal(){
+      return (this.dir[0]!=0 && this.dir[1]!=0);
+    }
+
+    isDiagonalLineAhead(){ 
+      const coordToCheck1 = [this.x + this.dir[0], this.y];
+      const coordToCheck2 = [this.x, this.y + this.dir[1]];
+      return this.space[coordToCheck1[0]][coordToCheck1[1]] != 0 && this.space[coordToCheck2[0]][coordToCheck2[1]];
     }
   
-    isPosValid(x, y){
+    isNextPosValid(){
+      const newX = this.x + this.dir[0];
+      const newY = this.y + this.dir[1];
       const xLim = this.space.length - 1;
       const yLim = this.space[0].length - 1;
-      if(x > xLim || y > yLim || x < 0 || y < 0){
+      if(newX > xLim || newY > yLim || newX < 0 || newY < 0){
         return false;
       }
-      return this.space[x][y] == 0;
+      if(this.isDirectionDiagonal()){
+        if(this.isDiagonalLineAhead()){
+          return false;
+        }
+      }
+      return this.space[newX][newY] == 0;
     }
   
     rotate45Clockwise(){ // TO-DO: find a neat formula for this
@@ -48,19 +71,20 @@ export default class Vec {
       const oldY = this.y;
       this.x = this.x + this.dir[0];
       this.y = this.y + this.dir[1];
+      this.space[this.x][this.y] = this.id;
       return [oldX, oldY, this.x, this.y, this.colour];
     }
   
     move(){
       if(!this.isStuck){
-        if(this.isPosValid(this.x + this.dir[0], this.y + this.dir[1])){
+        if(this.isNextPosValid()){
           return this.moveInDir();
         }
         else {
           let rotateCount = 0;
           while(rotateCount < 8){
             this.rotate45Clockwise();
-            if(this.isPosValid(this.x + this.dir[0], this.y + this.dir[1])){
+            if(this.isNextPosValid()){
               return this.moveInDir();
             }
             rotateCount++;

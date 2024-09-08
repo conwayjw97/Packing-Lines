@@ -1,12 +1,11 @@
 import Vec from "./Vec";
 
-const size = 20;
-const nVectors = 12;
-const strokeWeight = 10;
+const size = 21;
+const nVectors = 4;
+const strokeWeight = 5;
+const radius = 1;
 const colours = [
-  [255, 0, 0], 
-  [255, 255, 0],
-  [255, 165, 0],
+  [255, 0, 0],
   [255, 255, 255]
 ];
 
@@ -31,8 +30,9 @@ function indexToPos(index, windowHeight) {
 }
 
 function createCircularStartIndexes(space, r) {
-  const centreX = Math.round(space.length / 2);
-  const centreY = Math.round(space[0].length / 2);
+  const centreX = Math.floor(space.length / 2);
+  const centreY = Math.floor(space[0].length / 2);
+  console.log([space.length, centreX])
   let indexes = []
 
   for(let i=0; i<space.length; i++){
@@ -41,6 +41,7 @@ function createCircularStartIndexes(space, r) {
       const b = j - centreY;
       if((a*a + b*b) <= (r*r)){
         indexes.push([i, j])
+        space[i][j] = 1;
       }
     }
   }
@@ -58,10 +59,21 @@ export default function sketch(p) {
     p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
     let coloursIndex = 0;
 
+    // Central start position vectors
+    // const centreX = Math.round(space.length / 2) - 1;
+    // const centreY = Math.round(space[0].length / 2) - 1;
+    // for(let i=0; i<nVectors; i++){
+    //   let dir = [0, -1];
+    //   vectors[i] = new Vec(centreX, centreY, dir, space, colours[coloursIndex]);
+    //   coloursIndex++;
+    //   coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+    // }
+
     // Circular start position vectors
-    const startIndexes = createCircularStartIndexes(space, 1);
+    const startIndexes = createCircularStartIndexes(space, radius);
     for(let i=0; i<startIndexes.length; i++){
-      vectors[i] = new Vec(startIndexes[i][0], startIndexes[i][1], space, colours[coloursIndex]);
+      const newVec = new Vec(i+1, startIndexes[i][0], startIndexes[i][1], space, colours[coloursIndex]);
+      vectors.push(newVec);
       coloursIndex++;
       coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
     }
@@ -92,7 +104,7 @@ export default function sketch(p) {
       );
     }
 
-    if (p.millis() >= 1+timer) {
+    if (p.millis() >= 10+timer) {
       const isFinished = refresh(vectors, space, lines);
       if(isFinished) p.noLoop();
       timer = p.millis();
