@@ -1,27 +1,27 @@
 import Vec from "./Vec";
 
-const size = 10;
-const strokeWeight = 5;
+const size = 20;
+const strokeWeight = 10;
 const radius = 1;
+const nVectors = 2;
 const colours = [
   [255, 0, 0],
   [255, 255, 255]
 ];
 
 function refresh(vectors, space, lines) {
-  let allVectorsStuck = true;
+  let allVectorsFinished = true;
   for(const vector of vectors){
-    if(!vector.isStuck) {
-      allVectorsStuck = false;
+    if(!vector.isFinished) {
+      allVectorsFinished = false;
       const line = vector.move();
       if(line){
         lines.push(line);
       }
-      space[vector.x][vector.y] = 1;
     }
   }
 
-  return (allVectorsStuck) ? true : false;
+  return (allVectorsFinished) ? true : false;
 }
 
 function indexToPos(index, windowHeight) {
@@ -31,7 +31,6 @@ function indexToPos(index, windowHeight) {
 function createCircularStartIndexes(space, r) {
   const centreX = Math.floor(space.length / 2);
   const centreY = Math.floor(space[0].length / 2);
-  console.log([space.length, centreX])
   let indexes = []
 
   for(let i=0; i<space.length; i++){
@@ -39,8 +38,7 @@ function createCircularStartIndexes(space, r) {
       const a = i - centreX;
       const b = j - centreY;
       if((a*a + b*b) <= (r*r)){
-        indexes.push([i, j])
-        space[i][j] = 1;
+        indexes.push([i, j]);
       }
     }
   }
@@ -49,13 +47,14 @@ function createCircularStartIndexes(space, r) {
 }
 
 export default function sketch(p) {
-  let space = Array.from({length: size}).map(() => Array.from({length: size}).fill(0));
+  let space = Array.from({length: size}).map(() => Array.from({length: size}).fill([0, undefined]));
   let vectors = Array();
   let lines = Array();
   let timer = 0;
 
   p.setup = () => {
     p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+
     let coloursIndex = 0;
 
     // Circular start position vectors
@@ -66,7 +65,18 @@ export default function sketch(p) {
       coloursIndex++;
       coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
     }
+
+    // Random start position vectors
+    // for(let i=0; i<nVectors; i++){
+    //   const randX = Math.floor(Math.random() * size);
+    //   const randY = Math.floor(Math.random() * size);
+    //   vectors[i] = new Vec(i+1, randX, randY, space, colours[coloursIndex]);
+    //   coloursIndex++;
+    //   coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+    // }
   }
+
+    
 
   p.windowResized = () => p.resizeCanvas(p.windowWidth, p.windowHeight);
   
@@ -75,16 +85,22 @@ export default function sketch(p) {
     p.strokeWeight(strokeWeight);
 
     for(const line of lines){
-      p.stroke(line[4]);
+      const x1 = line[0];
+      const y1 = line[1];
+      const x2 = line[2];
+      const y2 = line[3];
+      const colour = line[4];
+
+      p.stroke(colour);
       p.line(
-        indexToPos(line[0], p.windowHeight), 
-        indexToPos(line[1], p.windowHeight), 
-        indexToPos(line[2], p.windowHeight), 
-        indexToPos(line[3], p.windowHeight)
+        indexToPos(x1, p.windowHeight), 
+        indexToPos(y1, p.windowHeight), 
+        indexToPos(x2, p.windowHeight), 
+        indexToPos(y2, p.windowHeight)
       );
     }
 
-    if (p.millis() >= 10+timer) {
+    if (p.millis() >= 1+timer) {
       const isFinished = refresh(vectors, space, lines);
       if(isFinished) p.noLoop();
       timer = p.millis();
