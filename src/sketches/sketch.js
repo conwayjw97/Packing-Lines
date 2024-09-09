@@ -1,14 +1,16 @@
 import Vec from "./Vec";
 
-const size = 21;
-const strokeWeight = 10;
+const size = 100;
+const strokeWeight = 3;
 const radius = 1;
-const nVectors = 2;
+const nVectors = 10;
 const colours = [
   [255, 0, 0],
+  [255/2, 0, 0],
   [255, 255, 255]
 ];
 const margin = 50;
+const speed = 50;
 
 function moveVectors(vectors, space, lines) {
   let allVectorsFinished = true;
@@ -65,58 +67,64 @@ export default function sketch(p) {
     p.createCanvas(canvasSize, canvasSize, p.P2D);
 
     let coloursIndex = 0;
+    let iter = 0;
 
     // Circular start position vectors
-    const startIndexes = createCircularStartIndexes(space, radius);
-    for(let i=0; i<startIndexes.length; i++){
-      const newVec = new Vec(i+1, startIndexes[i][0], startIndexes[i][1], space, colours[coloursIndex]);
-      vectors.push(newVec);
-      coloursIndex++;
-      coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
-    }
-
-    // Random start position vectors
-    // for(let i=0; i<nVectors; i++){
-    //   const randX = Math.floor(Math.random() * size);
-    //   const randY = Math.floor(Math.random() * size);
-    //   vectors[i] = new Vec(i+1, randX, randY, space, colours[coloursIndex]);
+    // const startIndexes = createCircularStartIndexes(space, radius);
+    // for(let i=0; i<startIndexes.length; i++){
+    //   const newVec = new Vec(i+1, startIndexes[i][0], startIndexes[i][1], space, colours[coloursIndex]);
+    //   vectors.push(newVec);
     //   coloursIndex++;
     //   coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
     // }
+
+    // Random start position vectors
+    for(let i=0; i<nVectors; i++){
+      const randX = Math.floor(Math.random() * size);
+      const randY = Math.floor(Math.random() * size);
+      vectors[i] = new Vec(i+1, randX, randY, space, colours[coloursIndex]);
+      coloursIndex++;
+      coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+    }
 
     let isFinished;
     do{
       isFinished = moveVectors(vectors, space, lines);
     } while(!isFinished);
+
+    p.background(0);
+    p.strokeWeight(strokeWeight);
   }
 
   // p.windowResized = () => p.resizeCanvas(500, 500);
   
   p.draw = () => {
-    p.background(0);
-    p.strokeWeight(strokeWeight);
-
     for(let i=0; i<currentLine; i++){
-      const line = lines[i];
-      const x1 = line[0];
-      const y1 = line[1];
-      const x2 = line[2];
-      const y2 = line[3];
-      const colour = line[4];
+      if(i < lines.length){ // Prevents errors incase speed makes currentLine larger than lines array length
+        const line = lines[i];
+        const x1 = line[0];
+        const y1 = line[1];
+        const x2 = line[2];
+        const y2 = line[3];
+        const colour = line[4];
 
-      p.stroke(colour);
-      p.line(
-        indexToPos(x1, p.width), 
-        indexToPos(y1, p.width), 
-        indexToPos(x2, p.width), 
-        indexToPos(y2, p.width)
-      );
+        p.stroke(colour);
+        p.line(
+          indexToPos(x1, p.width), 
+          indexToPos(y1, p.width), 
+          indexToPos(x2, p.width), 
+          indexToPos(y2, p.width)
+        );
+      }
     }
 
-    if (p.millis() >= 10+timer) {
-      currentLine++;
-      if(currentLine == lines.length) p.noLoop();
-      timer = p.millis();
-    }
+    if(currentLine > lines.length) p.noLoop();
+    currentLine += speed;
+
+    // if (p.millis() >= 10+timer) {
+    //   currentLine++;
+    //   if(currentLine == lines.length) p.noLoop();
+    //   timer = p.millis();
+    // }
   };
 }
