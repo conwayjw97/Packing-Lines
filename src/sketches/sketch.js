@@ -1,6 +1,6 @@
 import Vec from "./Vec";
 
-const size = 20;
+const size = 21;
 const strokeWeight = 10;
 const radius = 1;
 const nVectors = 2;
@@ -8,8 +8,9 @@ const colours = [
   [255, 0, 0],
   [255, 255, 255]
 ];
+const margin = 50;
 
-function refresh(vectors, space, lines) {
+function moveVectors(vectors, space, lines) {
   let allVectorsFinished = true;
   for(const vector of vectors){
     if(!vector.isFinished) {
@@ -24,8 +25,14 @@ function refresh(vectors, space, lines) {
   return (allVectorsFinished) ? true : false;
 }
 
-function indexToPos(index, windowHeight) {
-  return -(windowHeight-100)/2 + (((windowHeight-100)/size) * index);
+function indexToPos(index, canvasSize) {
+  // WEBGL
+  // return -(canvasSize-100)/2 + (((canvasSize-100)/size) * index);
+
+  // P2D
+  // For some reason 20 and 55 are the offsets with the most equal looking margins
+  // TO-DO Investigate why this is
+  return 20 + ((canvasSize-40)/(size-1)) * index;
 }
 
 function createCircularStartIndexes(space, r) {
@@ -51,9 +58,11 @@ export default function sketch(p) {
   let vectors = Array();
   let lines = Array();
   let timer = 0;
+  let currentLine = 1;
+  const canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
 
   p.setup = () => {
-    p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+    p.createCanvas(canvasSize, canvasSize, p.P2D);
 
     let coloursIndex = 0;
 
@@ -74,17 +83,21 @@ export default function sketch(p) {
     //   coloursIndex++;
     //   coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
     // }
+
+    let isFinished;
+    do{
+      isFinished = moveVectors(vectors, space, lines);
+    } while(!isFinished);
   }
 
-    
-
-  p.windowResized = () => p.resizeCanvas(p.windowWidth, p.windowHeight);
+  // p.windowResized = () => p.resizeCanvas(500, 500);
   
   p.draw = () => {
     p.background(0);
     p.strokeWeight(strokeWeight);
 
-    for(const line of lines){
+    for(let i=0; i<currentLine; i++){
+      const line = lines[i];
       const x1 = line[0];
       const y1 = line[1];
       const x2 = line[2];
@@ -93,18 +106,17 @@ export default function sketch(p) {
 
       p.stroke(colour);
       p.line(
-        indexToPos(x1, p.windowHeight), 
-        indexToPos(y1, p.windowHeight), 
-        indexToPos(x2, p.windowHeight), 
-        indexToPos(y2, p.windowHeight)
+        indexToPos(x1, p.width), 
+        indexToPos(y1, p.width), 
+        indexToPos(x2, p.width), 
+        indexToPos(y2, p.width)
       );
     }
 
-    if (p.millis() >= 1+timer) {
-      const isFinished = refresh(vectors, space, lines);
-      if(isFinished) p.noLoop();
+    if (p.millis() >= 10+timer) {
+      currentLine++;
+      if(currentLine == lines.length) p.noLoop();
       timer = p.millis();
-      // console.log(p.frameRate());
     }
   };
 }
