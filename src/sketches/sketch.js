@@ -10,7 +10,7 @@ const colours = [
   [255, 255, 255],
 ];
 const margin = 50;
-const speed = 1;
+let speed = 1;
 
 function moveVectors(vectors, space, lines) {
   let allVectorsFinished = true;
@@ -55,13 +55,32 @@ function createCircularStartIndexes(space, r) {
   return indexes;
 }
 
+function drawLine(p, i, lines){
+  if(i < lines.length){
+    const line = lines[i];
+    const x1 = line[0];
+    const y1 = line[1];
+    const x2 = line[2];
+    const y2 = line[3];
+    const colour = line[4];
+
+    p.stroke(colour);
+    p.line(
+      indexToPos(x1, p.width), 
+      indexToPos(y1, p.width), 
+      indexToPos(x2, p.width), 
+      indexToPos(y2, p.width)
+    );
+  }
+}
+
 export default function sketch(p) {
   let space = Array.from({length: size}).map(() => Array.from({length: size}).fill([0, undefined]));
   let vectors = Array();
   let lines = Array();
   let timer = 0;
   let pause = false;
-  let currentLine = 1;
+  let lineStep = 0;
   let reverse = false;
   const canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
 
@@ -102,66 +121,33 @@ export default function sketch(p) {
   
   p.draw = () => {
     if(!pause){
-      console.log(reverse)
-      if(currentLine < 1){
-        currentLine = 1;
+      p.clear();
+      if(lineStep < 0){
+        lineStep = 0;
         reverse = false;
         pause = true;
         timer = p.millis();
-        p.clear();
       } 
-      if(currentLine > lines.length){
-        currentLine = lines.length;
+      if(lineStep > lines.length){
+        lineStep = lines.length;
         reverse = true;
         pause = true;
         timer = p.millis();
-        p.clear();
       }
 
-      for(let i=0; i<currentLine; i++){
-        // if(i < lines.length){ // Prevents errors incase speed makes currentLine larger than lines array length
-          const line = lines[i];
-          const x1 = line[0];
-          const y1 = line[1];
-          const x2 = line[2];
-          const y2 = line[3];
-          const colour = line[4];
-
-          p.stroke(colour);
-          p.line(
-            indexToPos(x1, p.width), 
-            indexToPos(y1, p.width), 
-            indexToPos(x2, p.width), 
-            indexToPos(y2, p.width)
-          );
-        // }
+      for(let i=0; i<lineStep; i++){
+        drawLine(p, i, lines);
       }
 
       if(!reverse){
-        currentLine += speed;
+        lineStep += speed;
       } else {
-        currentLine -= speed;
+        lineStep -= speed;
       }
     }
 
-    if(pause && p.millis() >= 1000+timer) {
+    if(pause && p.millis() >= 100+timer) {
       pause = false;
     }
-
-    // if(currentLine > lines.length){
-    //   if(reverse){
-    //     if (p.millis() >= 1000+timer) {
-    //       timer = p.millis();
-    //     }
-    //   } else {
-    //     p.noLoop();
-    //   }
-    // } 
-
-    // if (p.millis() >= 10+timer) {
-    //   currentLine++;
-    //   if(currentLine == lines.length) p.noLoop();
-    //   timer = p.millis();
-    // }
   };
 }
