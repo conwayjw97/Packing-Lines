@@ -1,9 +1,9 @@
 import Vec from "./Vec";
 
-const size = 100;
-const strokeWeight = 2;
+let size = 50;
+const strokeWeight = 3;
 const radius = 10;
-const nVectors = 100;
+const nVectors = 50;
 const colours = [
   // [255, 255, 255],
   // [0, 255, 0],
@@ -17,10 +17,10 @@ const colours = [
   // [0, 0, 255],
   // [0, 0, 255*0.5],
   // [0, 0, 255*0.25],
-  // [0, 0, 255*0.75],
+  // [0, 0, 255*0.75],  
 ];
 const margin = 50;
-let speed = 100;
+let speed = 20;
 
 function moveVectors(vectors, lines) {
   let allVectorsFinished = true;
@@ -85,6 +85,9 @@ function drawLine(p, i, lines){
 }
 
 export default function sketch(p) {
+  // if(props.size){
+  //   size = props.size;
+  // }
   let space = Array.from({length: size}).map(() => Array.from({length: size}).fill([0, undefined]));
   let vectors = Array();
   let lines = Array();
