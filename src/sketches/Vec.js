@@ -66,7 +66,7 @@ export default class Vec {
       return this.space[newX][newY][0] == 0;
     }
   
-    rotate45Clockwise(){ 
+    rotate(){ 
       this.dir = directions[(directions.indexOf(this.dir) + 1) % directions.length];
     }
   
@@ -95,7 +95,7 @@ export default class Vec {
         else {
           let rotateCount = 0;
           while(rotateCount < 8){
-            this.rotate45Clockwise();
+            this.rotate();
             if(this.isNextPosValid()){
               return this.moveInDir();
             }

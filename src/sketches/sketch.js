@@ -1,18 +1,28 @@
 import Vec from "./Vec";
 
-const size = 10;
-const strokeWeight = 10;
-const radius = 1;
-const nVectors = 5;
+const size = 100;
+const strokeWeight = 2;
+const radius = 10;
+const nVectors = 100;
 const colours = [
+  // [255, 255, 255],
+  // [0, 255, 0],
+  // [0, 255*0.5, 0],
+  // [0, 255*0.25, 0],
+  // [0, 255*0.75, 0],
   [255, 0, 0],
-  [255/2, 0, 0],
-  [255, 255, 255],
+  [255*0.5, 0, 0],
+  [255*0.25, 0, 0],
+  [255*0.75, 0, 0],
+  // [0, 0, 255],
+  // [0, 0, 255*0.5],
+  // [0, 0, 255*0.25],
+  // [0, 0, 255*0.75],
 ];
 const margin = 50;
-let speed = 1;
+let speed = 100;
 
-function moveVectors(vectors, space, lines) {
+function moveVectors(vectors, lines) {
   let allVectorsFinished = true;
   for(const vector of vectors){
     if(!vector.isFinished) {
@@ -32,7 +42,7 @@ function indexToPos(index, canvasSize) {
   // return -(canvasSize-100)/2 + (((canvasSize-100)/size) * index);
 
   // P2D
-  // For some reason 20 and 55 are the offsets with the most equal looking margins
+  // For some reason 20 and 40 are the offsets with the most equal looking margins
   // TO-DO Investigate why this is
   return 20 + ((canvasSize-40)/(size-1)) * index;
 }
@@ -88,7 +98,7 @@ export default function sketch(p) {
     p.createCanvas(canvasSize, canvasSize, p.P2D);
 
     let coloursIndex = 0;
-    let iter = 0;
+    let vectorsIndex = 0;
 
     // Circular start position vectors
     // const startIndexes = createCircularStartIndexes(space, radius);
@@ -103,15 +113,33 @@ export default function sketch(p) {
     for(let i=0; i<nVectors; i++){
       const randX = Math.floor(Math.random() * size);
       const randY = Math.floor(Math.random() * size);
-      vectors[i] = new Vec(i+1, randX, randY, space, colours[coloursIndex]);
+      vectorsIndex++;
+      vectors[i] = new Vec(vectorsIndex, randX, randY, space, colours[coloursIndex]);
       coloursIndex++;
       coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
     }
 
     let isFinished;
     do{
-      isFinished = moveVectors(vectors, space, lines);
+      isFinished = moveVectors(vectors, lines);
     } while(!isFinished);
+
+    // Remaining start position vectors
+    for(let i=0; i<space.length; i++){
+      for(let j=0; j<space[0].length; j++){
+        if(space[i][j][0] == 0){
+          vectorsIndex++;
+          const cleanupVector = new Vec(vectorsIndex, i, j, space, colours[coloursIndex]);
+          coloursIndex++;
+          coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+
+          let isFinished;
+          do{
+            isFinished = moveVectors([cleanupVector], lines);
+          } while(!isFinished);
+        }
+      }
+    }
 
     p.background(0);
     p.strokeWeight(strokeWeight);
@@ -122,6 +150,7 @@ export default function sketch(p) {
   p.draw = () => {
     if(!pause){
       p.clear();
+      
       if(lineStep < 0){
         lineStep = 0;
         reverse = false;
@@ -146,7 +175,7 @@ export default function sketch(p) {
       }
     }
 
-    if(pause && p.millis() >= 100+timer) {
+    if(pause && p.millis() >= 1000+timer) {
       pause = false;
     }
   };
