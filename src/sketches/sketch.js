@@ -93,7 +93,7 @@ function interpolateColours(colour1, colour2, percent) {
 
 export default function sketch(p) {
   let space, vectors, lines, timer, pause, lineStep, reverse, colours;
-  const canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
+  let canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
 
   p.updateWithProps = props => {
     if (props.size) size = Number(props.size);
@@ -118,7 +118,7 @@ export default function sketch(p) {
     reverse = false;
     colours = [];
 
-    const percent = 1 / 8;
+    const percent = 1 / nVectors;
     let i = 0;
     while(i <= 1){
       colours.push(interpolateColours(colour1, colour2, i));
@@ -178,7 +178,10 @@ export default function sketch(p) {
     p.strokeWeight(strokeWeight);
   }
 
-  // p.windowResized = () => p.resizeCanvas(500, 500);
+  p.windowResized = () => {
+    canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
+    p.resizeCanvas(canvasSize, canvasSize)
+  }
   
   p.draw = () => {
     if(!pause){
