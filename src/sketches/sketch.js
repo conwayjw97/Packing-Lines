@@ -7,6 +7,7 @@ let nVectors = 50;
 let strokeWeight = 3;
 let colour1 = "#ffffff";
 let colour2 = "#ffffff";
+let loop = true;
 const radius = 10;
 const margin = 50;
 
@@ -102,6 +103,7 @@ export default function sketch(p) {
     if (props.colour1) colour1 = props.colour1;
     if (props.colour2) colour2 = props.colour2;
     if (props.startAlgo) startAlgo = props.startAlgo;
+    if (props.loop) loop = (props.loop === "true");
     p.setup();
   };
 
@@ -206,7 +208,7 @@ export default function sketch(p) {
       }
     }
 
-    if(pause && p.millis() >= 1000+timer) {
+    if(pause && p.millis() >= 1000+timer && loop) {
       pause = false;
     }
   };

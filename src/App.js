@@ -13,6 +13,7 @@ function App() {
   const [colour1, setColour1] = useState();
   const [colour2, setColour2] = useState();
   const [startAlgo, setStartAlgo] = useState();
+  const [loop, setLoop] = useState();
 
   useEffect(() => {
     if(!searchParams.get("size")){
@@ -70,6 +71,14 @@ function App() {
       });
     }
     setStartAlgo(searchParams.get("startAlgo"));
+
+    if(!searchParams.get("loop")){
+      setSearchParams(params => {
+        params.set("loop", "true");
+        return params;
+      });
+    }
+    setLoop(searchParams.get("loop"));
   });
 
   return (
@@ -83,6 +92,7 @@ function App() {
         colour1={colour1}
         colour2={colour2}
         startAlgo={startAlgo}
+        loop={loop}
       />
     </div>
   );
