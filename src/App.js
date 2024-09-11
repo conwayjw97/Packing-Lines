@@ -1,6 +1,6 @@
 import sketch from './sketches/sketch';
 import React from "react";
-import { Routes, Route, useSearchParams } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useSearchParams } from 'react-router-dom';
 import { ReactP5Wrapper } from "react-p5-wrapper";
 
 
@@ -8,11 +8,15 @@ function App() {
   // const [searchParams, setSearchParams] = useSearchParams();
   // const size = searchParams.get("size");
   return (
-    <div className="App">
+    <Router>
       <Routes>
-        <Route path="/" exact component={<ReactP5Wrapper sketch={sketch}></ReactP5Wrapper>} />
+        <Route path="/" element={
+          <div className="App">
+            <ReactP5Wrapper sketch={sketch}></ReactP5Wrapper>
+          </div>
+        }/>
       </Routes>
-    </div>
+    </Router>
   );
 }
 
