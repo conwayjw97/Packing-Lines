@@ -87,16 +87,25 @@ function drawLine(p, i, lines){
 
 
 export default function sketch(p) {
-  let space = Array.from({length: size}).map(() => Array.from({length: size}).fill([0, undefined]));
-  let vectors = Array();
-  let lines = Array();
-  let timer = 0;
-  let pause = false;
-  let lineStep = 0;
-  let reverse = false;
+  let space, vectors, lines, timer, pause, lineStep, reverse;
   const canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
 
-  const reset = () => {
+  p.updateWithProps = props => {
+    if (props.size) size = props.size;
+    if (props.speed) speed = props.speed;
+    p.setup();
+  };
+
+  p.setup = () => {
+    p.createCanvas(canvasSize, canvasSize, p.P2D);
+    space = Array.from({length: size}).map(() => Array.from({length: size}).fill([0, undefined]));
+    vectors = [];
+    lines = [];
+    timer = 0;
+    pause = false;
+    lineStep = 0;
+    reverse = false;
+
     let coloursIndex = 0;
     let vectorsIndex = 0;
   
@@ -143,16 +152,6 @@ export default function sketch(p) {
   
     p.background(0);
     p.strokeWeight(strokeWeight);
-  }
-
-  p.updateWithProps = props => {
-    if (props.size) size = props.size;
-    reset();
-  };
-
-  p.setup = () => {
-    p.createCanvas(canvasSize, canvasSize, p.P2D);
-    reset();
   }
 
   // p.windowResized = () => p.resizeCanvas(500, 500);

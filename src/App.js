@@ -7,21 +7,29 @@ import { ReactP5Wrapper } from "react-p5-wrapper";
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [size, setSize] = useState(50);
+  const [speed, setSpeed] = useState(20);
 
   useEffect(() => {
-    const urlSize = searchParams.get("size");
-    if(!urlSize){
+    if(!searchParams.get("size")){
       setSearchParams(params => {
         params.set("size", 50);
         return params;
       });
     }
     setSize(searchParams.get("size"));
+
+    if(!searchParams.get("speed")){
+      setSearchParams(params => {
+        params.set("speed", 20);
+        return params;
+      });
+    }
+    setSpeed(searchParams.get("speed"));
   });
 
   return (
     <div className="App">
-      <ReactP5Wrapper sketch={sketch} size={size}></ReactP5Wrapper>
+      <ReactP5Wrapper sketch={sketch} size={size} speed={speed}></ReactP5Wrapper>
     </div>
   );
 }
