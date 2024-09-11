@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from 'react-router-dom';
 import { ReactP5Wrapper } from "react-p5-wrapper";
 
-
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [size, setSize] = useState();
@@ -15,70 +14,25 @@ function App() {
   const [startAlgo, setStartAlgo] = useState();
   const [loop, setLoop] = useState();
 
+  const initSearchParam = (param, initValue, setState) => {
+    if(!searchParams.get(param)){
+      setSearchParams(params => {
+        params.set(param, initValue);
+        return params;
+      })
+    }
+    setState(searchParams.get(param));
+  }
+
   useEffect(() => {
-    if(!searchParams.get("size")){
-      setSearchParams(params => {
-        params.set("size", 50);
-        return params;
-      });
-    }
-    setSize(searchParams.get("size"));
-
-    if(!searchParams.get("speed")){
-      setSearchParams(params => {
-        params.set("speed", 20);
-        return params;
-      });
-    }
-    setSpeed(searchParams.get("speed"));
-
-    if(!searchParams.get("vectors")){
-      setSearchParams(params => {
-        params.set("vectors", 50);
-        return params;
-      });
-    }
-    setNVectors(searchParams.get("vectors"));
-
-    if(!searchParams.get("lineWidth")){
-      setSearchParams(params => {
-        params.set("lineWidth", 3);
-        return params;
-      });
-    }
-    setLineWidth(searchParams.get("lineWidth"));
-
-    if(!searchParams.get("colour1")){
-      setSearchParams(params => {
-        params.set("colour1", "ff0000");
-        return params;
-      });
-    }
-    setColour1("#" + searchParams.get("colour1"));
-
-    if(!searchParams.get("colour2")){
-      setSearchParams(params => {
-        params.set("colour2", "7d0000");
-        return params;
-      });
-    }
-    setColour2("#" + searchParams.get("colour2"));
-
-    if(!searchParams.get("startAlgo")){
-      setSearchParams(params => {
-        params.set("startAlgo", "rand");
-        return params;
-      });
-    }
-    setStartAlgo(searchParams.get("startAlgo"));
-
-    if(!searchParams.get("loop")){
-      setSearchParams(params => {
-        params.set("loop", "true");
-        return params;
-      });
-    }
-    setLoop(searchParams.get("loop"));
+    initSearchParam("size", 100, setSize);
+    initSearchParam("speed", 20, setSpeed);
+    initSearchParam("vectors", 50, setNVectors);
+    initSearchParam("lineWidth", 3, setLineWidth);
+    initSearchParam("colour1", "ff0000", setColour1);
+    initSearchParam("colour2", "7d0000", setColour2);
+    initSearchParam("startAlgo", "rand", setStartAlgo);
+    initSearchParam("loop", "true", setLoop);
   });
 
   return (

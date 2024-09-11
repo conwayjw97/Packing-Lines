@@ -28,7 +28,7 @@ export default class Vec {
     }
 
     isDirectionDiagonal(){
-      return (this.dir[0]!=0 && this.dir[1]!=0);
+      return (this.dir[0]!==0 && this.dir[1]!==0);
     }
 
     isDiagonalLineAhead(){ 
@@ -36,12 +36,12 @@ export default class Vec {
       const space2 = [this.x, this.y + this.dir[1]]
       const spaceToCheck1 = this.space[space1[0]][space1[1]];
       const spaceToCheck2 = this.space[space2[0]][space2[1]];
-      const space1IsTaken = spaceToCheck1[0] != 0;
-      const space2IsTaken = spaceToCheck2[0] != 0;
+      const space1IsTaken = spaceToCheck1[0] !== 0;
+      const space2IsTaken = spaceToCheck2[0] !== 0;
       if (space1IsTaken && space2IsTaken){
-        const spacesAreSameVectors = spaceToCheck1[0] == spaceToCheck2[0];
+        const spacesAreSameVectors = spaceToCheck1[0] === spaceToCheck2[0];
         if(spacesAreSameVectors){
-          const spacesAreCoveredInSequence = Math.abs(spaceToCheck1[1] - spaceToCheck2[1]) == 1;
+          const spacesAreCoveredInSequence = Math.abs(spaceToCheck1[1] - spaceToCheck2[1]) === 1;
           if(spacesAreCoveredInSequence){
             return true;
           }
@@ -63,7 +63,7 @@ export default class Vec {
           return false;
         }
       }
-      return this.space[newX][newY][0] == 0;
+      return this.space[newX][newY][0] === 0;
     }
   
     rotate(){ 

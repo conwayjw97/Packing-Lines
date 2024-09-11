@@ -99,9 +99,9 @@ export default function sketch(p) {
     if (props.size) size = Number(props.size);
     if (props.speed) speed = Number(props.speed);
     if (props.nVectors) nVectors = Number(props.nVectors);
-    if (props.lineWidth) strokeWeight = props.lineWidth;
-    if (props.colour1) colour1 = props.colour1;
-    if (props.colour2) colour2 = props.colour2;
+    if (props.lineWidth) strokeWeight = Number(props.lineWidth);
+    if (props.colour1) colour1 = "#" + props.colour1;
+    if (props.colour2) colour2 = "#" + props.colour2;
     if (props.startAlgo) startAlgo = props.startAlgo;
     if (props.loop) loop = (props.loop === "true");
     p.setup();
@@ -118,7 +118,7 @@ export default function sketch(p) {
     reverse = false;
     colours = [];
 
-    const percent = 1 / 4;
+    const percent = 1 / 8;
     let i = 0;
     while(i <= 1){
       colours.push(interpolateColours(colour1, colour2, i));

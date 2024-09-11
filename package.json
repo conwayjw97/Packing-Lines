@@ -1,5 +1,5 @@
 {
-  "name": "line-packer",
+  "name": "packing-lines",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
