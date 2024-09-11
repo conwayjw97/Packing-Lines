@@ -91,8 +91,8 @@ export default function sketch(p) {
   const canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
 
   p.updateWithProps = props => {
-    if (props.size) size = props.size;
-    if (props.speed) speed = props.speed;
+    if (props.size) size = Number(props.size);
+    if (props.speed) speed = Number(props.speed);
     p.setup();
   };
 
