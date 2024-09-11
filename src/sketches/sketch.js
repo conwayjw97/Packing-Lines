@@ -1,6 +1,7 @@
 import Vec from "./Vec";
 
 let size = 50;
+let startAlgo = "rand";
 const strokeWeight = 3;
 const radius = 10;
 const nVectors = 50;
@@ -47,19 +48,17 @@ function indexToPos(index, canvasSize) {
   return 20 + ((canvasSize-40)/(size-1)) * index;
 }
 
-function createCircularStartIndexes(space, r) {
+function createCircularStartIndexes(nVectors, r, space) {
   const centreX = Math.floor(space.length / 2);
   const centreY = Math.floor(space[0].length / 2);
-  let indexes = []
+  let indexes = [];
 
-  for(let i=0; i<space.length; i++){
-    for(let j=0; j<space[0].length; j++){
-      const a = i - centreX;
-      const b = j - centreY;
-      if((a*a + b*b) <= (r*r)){
-        indexes.push([i, j]);
-      }
-    }
+  const slice = 2 * Math.PI / nVectors;
+  for (let i=0; i<nVectors; i++){
+      const angle = slice * i;
+      const newX = Math.round((centreX + r * Math.cos(angle)));
+      const newY = Math.round((centreY + r * Math.sin(angle)));
+      indexes.push([newX, newY]);
   }
 
   return indexes;
@@ -93,6 +92,7 @@ export default function sketch(p) {
   p.updateWithProps = props => {
     if (props.size) size = Number(props.size);
     if (props.speed) speed = Number(props.speed);
+    if (props.startAlgo) startAlgo = props.startAlgo;
     p.setup();
   };
 
@@ -108,24 +108,27 @@ export default function sketch(p) {
 
     let coloursIndex = 0;
     let vectorsIndex = 0;
-  
-    // Circular start position vectors
-    // const startIndexes = createCircularStartIndexes(space, radius);
-    // for(let i=0; i<startIndexes.length; i++){
-    //   const newVec = new Vec(i+1, startIndexes[i][0], startIndexes[i][1], space, colours[coloursIndex]);
-    //   vectors.push(newVec);
-    //   coloursIndex++;
-    //   coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
-    // }
-  
-    // Random start position vectors
-    for(let i=0; i<nVectors; i++){
-      const randX = Math.floor(Math.random() * size);
-      const randY = Math.floor(Math.random() * size);
-      vectorsIndex++;
-      vectors[i] = new Vec(vectorsIndex, randX, randY, space, colours[coloursIndex]);
-      coloursIndex++;
-      coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+
+    switch(startAlgo){
+      case "rand":
+        for(let i=0; i<nVectors; i++){
+          const randX = Math.floor(Math.random() * size);
+          const randY = Math.floor(Math.random() * size);
+          vectorsIndex++;
+          vectors[i] = new Vec(vectorsIndex, randX, randY, space, colours[coloursIndex]);
+          coloursIndex++;
+          coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+        }
+        break;
+      case "circular":
+        const startIndexes = createCircularStartIndexes(nVectors, radius, space);
+        for(let i=0; i<startIndexes.length; i++){
+          const newVec = new Vec(i+1, startIndexes[i][0], startIndexes[i][1], space, colours[coloursIndex]);
+          vectors.push(newVec);
+          coloursIndex++;
+          coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+        }
+        break;
     }
   
     let isFinished;

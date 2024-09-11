@@ -6,8 +6,9 @@ import { ReactP5Wrapper } from "react-p5-wrapper";
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [size, setSize] = useState(50);
-  const [speed, setSpeed] = useState(20);
+  const [size, setSize] = useState();
+  const [speed, setSpeed] = useState();
+  const [startAlgo, setStartAlgo] = useState();
 
   useEffect(() => {
     if(!searchParams.get("size")){
@@ -25,11 +26,19 @@ function App() {
       });
     }
     setSpeed(searchParams.get("speed"));
+
+    if(!searchParams.get("startAlgo")){
+      setSearchParams(params => {
+        params.set("startAlgo", "rand");
+        return params;
+      });
+    }
+    setStartAlgo(searchParams.get("startAlgo"));
   });
 
   return (
     <div className="App">
-      <ReactP5Wrapper sketch={sketch} size={size} speed={speed}></ReactP5Wrapper>
+      <ReactP5Wrapper sketch={sketch} size={size} speed={speed} startAlgo={startAlgo}></ReactP5Wrapper>
     </div>
   );
 }
