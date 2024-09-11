@@ -84,10 +84,9 @@ function drawLine(p, i, lines){
   }
 }
 
+
+
 export default function sketch(p) {
-  // if(props.size){
-  //   size = props.size;
-  // }
   let space = Array.from({length: size}).map(() => Array.from({length: size}).fill([0, undefined]));
   let vectors = Array();
   let lines = Array();
@@ -97,12 +96,10 @@ export default function sketch(p) {
   let reverse = false;
   const canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
 
-  p.setup = () => {
-    p.createCanvas(canvasSize, canvasSize, p.P2D);
-
+  const reset = () => {
     let coloursIndex = 0;
     let vectorsIndex = 0;
-
+  
     // Circular start position vectors
     // const startIndexes = createCircularStartIndexes(space, radius);
     // for(let i=0; i<startIndexes.length; i++){
@@ -111,7 +108,7 @@ export default function sketch(p) {
     //   coloursIndex++;
     //   coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
     // }
-
+  
     // Random start position vectors
     for(let i=0; i<nVectors; i++){
       const randX = Math.floor(Math.random() * size);
@@ -121,12 +118,12 @@ export default function sketch(p) {
       coloursIndex++;
       coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
     }
-
+  
     let isFinished;
     do{
       isFinished = moveVectors(vectors, lines);
     } while(!isFinished);
-
+  
     // Remaining start position vectors
     for(let i=0; i<space.length; i++){
       for(let j=0; j<space[0].length; j++){
@@ -135,7 +132,7 @@ export default function sketch(p) {
           const cleanupVector = new Vec(vectorsIndex, i, j, space, colours[coloursIndex]);
           coloursIndex++;
           coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
-
+  
           let isFinished;
           do{
             isFinished = moveVectors([cleanupVector], lines);
@@ -143,9 +140,19 @@ export default function sketch(p) {
         }
       }
     }
-
+  
     p.background(0);
     p.strokeWeight(strokeWeight);
+  }
+
+  p.updateWithProps = props => {
+    if (props.size) size = props.size;
+    reset();
+  };
+
+  p.setup = () => {
+    p.createCanvas(canvasSize, canvasSize, p.P2D);
+    reset();
   }
 
   // p.windowResized = () => p.resizeCanvas(500, 500);

@@ -1,22 +1,28 @@
 import sketch from './sketches/sketch';
-import React from "react";
-import { BrowserRouter as Router, Route, Routes, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from 'react-router-dom';
 import { ReactP5Wrapper } from "react-p5-wrapper";
 
 
 function App() {
-  // const [searchParams, setSearchParams] = useSearchParams();
-  // const size = searchParams.get("size");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [size, setSize] = useState(50);
+
+  useEffect(() => {
+    const urlSize = searchParams.get("size");
+    if(!urlSize){
+      setSearchParams(params => {
+        params.set("size", 50);
+        return params;
+      });
+    }
+    setSize(searchParams.get("size"));
+  });
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={
-          <div className="App">
-            <ReactP5Wrapper sketch={sketch}></ReactP5Wrapper>
-          </div>
-        }/>
-      </Routes>
-    </Router>
+    <div className="App">
+      <ReactP5Wrapper sketch={sketch} size={size}></ReactP5Wrapper>
+    </div>
   );
 }
 
