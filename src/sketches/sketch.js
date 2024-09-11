@@ -1,27 +1,14 @@
 import Vec from "./Vec";
 
 let size = 50;
-let startAlgo = "rand";
-const strokeWeight = 3;
-const radius = 10;
-const nVectors = 50;
-const colours = [
-  // [255, 255, 255],
-  // [0, 255, 0],
-  // [0, 255*0.5, 0],
-  // [0, 255*0.25, 0],
-  // [0, 255*0.75, 0],
-  [255, 0, 0],
-  [255*0.5, 0, 0],
-  [255*0.25, 0, 0],
-  [255*0.75, 0, 0],
-  // [0, 0, 255],
-  // [0, 0, 255*0.5],
-  // [0, 0, 255*0.25],
-  // [0, 0, 255*0.75],  
-];
-const margin = 50;
 let speed = 20;
+let startAlgo = "rand";
+let nVectors = 50;
+let strokeWeight = 3;
+let colour1 = "#ffffff";
+let colour2 = "#ffffff";
+const radius = 10;
+const margin = 50;
 
 function moveVectors(vectors, lines) {
   let allVectorsFinished = true;
@@ -83,15 +70,37 @@ function drawLine(p, i, lines){
   }
 }
 
+function interpolateColours(colour1, colour2, percent) {
+  // Convert the hex colors to RGB values
+  const r1 = parseInt(colour1.substring(1, 3), 16);
+  const g1 = parseInt(colour1.substring(3, 5), 16);
+  const b1 = parseInt(colour1.substring(5, 7), 16);
 
+  const r2 = parseInt(colour2.substring(1, 3), 16);
+  const g2 = parseInt(colour2.substring(3, 5), 16);
+  const b2 = parseInt(colour2.substring(5, 7), 16);
+
+  // Interpolate the RGB values
+  const r = Math.round(r1 + (r2 - r1) * percent);
+  const g = Math.round(g1 + (g2 - g1) * percent);
+  const b = Math.round(b1 + (b2 - b1) * percent);
+
+  // Convert the interpolated RGB values back to a hex color
+  const outColour = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  return outColour;
+}
 
 export default function sketch(p) {
-  let space, vectors, lines, timer, pause, lineStep, reverse;
+  let space, vectors, lines, timer, pause, lineStep, reverse, colours;
   const canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
 
   p.updateWithProps = props => {
     if (props.size) size = Number(props.size);
     if (props.speed) speed = Number(props.speed);
+    if (props.nVectors) nVectors = Number(props.nVectors);
+    if (props.lineWidth) strokeWeight = props.lineWidth;
+    if (props.colour1) colour1 = props.colour1;
+    if (props.colour2) colour2 = props.colour2;
     if (props.startAlgo) startAlgo = props.startAlgo;
     p.setup();
   };
@@ -105,6 +114,14 @@ export default function sketch(p) {
     pause = false;
     lineStep = 0;
     reverse = false;
+    colours = [];
+
+    const percent = 1 / 4;
+    let i = 0;
+    while(i <= 1){
+      colours.push(interpolateColours(colour1, colour2, i));
+      i += percent;
+    }
 
     let coloursIndex = 0;
     let vectorsIndex = 0;
@@ -117,17 +134,19 @@ export default function sketch(p) {
           vectorsIndex++;
           vectors[i] = new Vec(vectorsIndex, randX, randY, space, colours[coloursIndex]);
           coloursIndex++;
-          coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+          coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
         }
         break;
-      case "circular":
+      case "circ":
         const startIndexes = createCircularStartIndexes(nVectors, radius, space);
         for(let i=0; i<startIndexes.length; i++){
           const newVec = new Vec(i+1, startIndexes[i][0], startIndexes[i][1], space, colours[coloursIndex]);
           vectors.push(newVec);
           coloursIndex++;
-          coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+          coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
         }
+        break;
+      default:
         break;
     }
   
@@ -139,11 +158,11 @@ export default function sketch(p) {
     // Remaining start position vectors
     for(let i=0; i<space.length; i++){
       for(let j=0; j<space[0].length; j++){
-        if(space[i][j][0] == 0){
+        if(space[i][j][0] === 0){
           vectorsIndex++;
           const cleanupVector = new Vec(vectorsIndex, i, j, space, colours[coloursIndex]);
           coloursIndex++;
-          coloursIndex = (coloursIndex == colours.length) ?  0 : coloursIndex;
+          coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
   
           let isFinished;
           do{

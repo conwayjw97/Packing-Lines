@@ -8,6 +8,10 @@ function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [size, setSize] = useState();
   const [speed, setSpeed] = useState();
+  const [nVectors, setNVectors] = useState();
+  const [lineWidth, setLineWidth] = useState();
+  const [colour1, setColour1] = useState();
+  const [colour2, setColour2] = useState();
   const [startAlgo, setStartAlgo] = useState();
 
   useEffect(() => {
@@ -27,6 +31,38 @@ function App() {
     }
     setSpeed(searchParams.get("speed"));
 
+    if(!searchParams.get("vectors")){
+      setSearchParams(params => {
+        params.set("vectors", 50);
+        return params;
+      });
+    }
+    setNVectors(searchParams.get("vectors"));
+
+    if(!searchParams.get("lineWidth")){
+      setSearchParams(params => {
+        params.set("lineWidth", 3);
+        return params;
+      });
+    }
+    setLineWidth(searchParams.get("lineWidth"));
+
+    if(!searchParams.get("colour1")){
+      setSearchParams(params => {
+        params.set("colour1", "ff0000");
+        return params;
+      });
+    }
+    setColour1("#" + searchParams.get("colour1"));
+
+    if(!searchParams.get("colour2")){
+      setSearchParams(params => {
+        params.set("colour2", "7d0000");
+        return params;
+      });
+    }
+    setColour2("#" + searchParams.get("colour2"));
+
     if(!searchParams.get("startAlgo")){
       setSearchParams(params => {
         params.set("startAlgo", "rand");
@@ -38,7 +74,16 @@ function App() {
 
   return (
     <div className="App">
-      <ReactP5Wrapper sketch={sketch} size={size} speed={speed} startAlgo={startAlgo}></ReactP5Wrapper>
+      <ReactP5Wrapper 
+        sketch={sketch} 
+        size={size} 
+        speed={speed} 
+        nVectors={nVectors} 
+        lineWidth={lineWidth} 
+        colour1={colour1}
+        colour2={colour2}
+        startAlgo={startAlgo}
+      />
     </div>
   );
 }
