@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
     initSearchParam("size", 100, setSize);
-    initSearchParam("speed", 30, setSpeed);
+    initSearchParam("speed", 50, setSpeed);
     initSearchParam("vectors", 50, setNVectors);
     initSearchParam("lineWidth", 3, setLineWidth);
     initSearchParam("colour1", "ff0000", setColour1);

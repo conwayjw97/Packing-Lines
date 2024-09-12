@@ -6,6 +6,7 @@ Original idea from [this post](https://www.reddit.com/r/generative/comments/qs1v
 
 Hosted version: https://conwayjw97.github.io/Packing-Lines/
 
+
 Change the parameters in the url to customise the sketch:
 - size: size of the grid to fill with lines (100 = 100x100 grid)
 - speed: animation draw speed
@@ -14,5 +15,6 @@ Change the parameters in the url to customise the sketch:
 - colour1/colour2: hex values of two colours, each vector will be assigned a colour interpolated from between these two
 - startAlgo: vectors start in random positions ("rand") or along the radius of a circle in the centre of the grid ("circ")
 - loop: true/false value to toggle animation looping
+
 
 To run locally, clone and run "npm start" from the root directory.

@@ -27,16 +27,26 @@ function moveVectors(vectors, lines) {
 }
 
 function indexToPos(index, canvasSize) {
-  // WEBGL
-  // return -(canvasSize-100)/2 + (((canvasSize-100)/size) * index);
-
-  // P2D
-  // For some reason 20 and 40 are the offsets with the most equal looking margins
-  // TO-DO Investigate why this is
   return 20 + ((canvasSize-40)/(size-1)) * index;
 }
 
-function createCircularStartIndexes(nVectors, r, space) {
+function randomStartVectors(size, space, colours){
+  let coloursIndex = 0;
+  let vectors = [];
+
+  for(let i=0; i<nVectors; i++){
+    const randX = Math.floor(Math.random() * size);
+    const randY = Math.floor(Math.random() * size);
+    const newVec = new Vec(i+1, randX, randY, space, colours[coloursIndex]);
+    vectors.push(newVec);
+    coloursIndex++;
+    coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+  }
+
+  return vectors;
+}
+
+function circularStartVectors(nVectors, r, space, colours) {
   const centreX = Math.floor(space.length / 2);
   const centreY = Math.floor(space[0].length / 2);
   let indexes = [];
@@ -46,10 +56,57 @@ function createCircularStartIndexes(nVectors, r, space) {
       const angle = slice * i;
       const newX = Math.round((centreX + r * Math.cos(angle)));
       const newY = Math.round((centreY + r * Math.sin(angle)));
-      indexes.push([newX, newY]);
+      if(!indexes.includes([newX, newY])) indexes.push([newX, newY]);
+  }
+  
+  let coloursIndex = 0;
+  let vectors = [];
+  for (let i=0; i<indexes.length; i++){
+    const newVec = new Vec(i+1, indexes[i][0], indexes[i][1], space, colours[coloursIndex]);
+    vectors.push(newVec);
+    coloursIndex++;
+    coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+  }
+}
+
+function edgeStartVectors(nVectors, space, colours) {
+  let availableIndexes = [];
+  const xLim = space.length - 1;
+  const yLim = space[0].length - 1;
+
+  for(let i=0; i<space.length; i++){
+    for(let j=0; j<space[0].length; j++){
+      if(i == 0 || j == 0 || i == xLim || j == yLim){
+        availableIndexes.push([i, j]);
+      }
+    }
   }
 
-  return indexes;
+  let indexes = [];
+  let i, arrayLen;
+  if(nVectors < indexes.length) {
+    arrayLen = nVectors;
+  } else {
+    arrayLen = availableIndexes.length;
+  }
+  i = Math.ceil(arrayLen/2);
+  let j = i - 1;
+
+  while (j >= 0) {
+    indexes.push(availableIndexes[j--]);
+    if (i < arrayLen) indexes.push(availableIndexes[i++]);
+  }
+
+  let coloursIndex = 0;
+  let vectors = [];
+  for (let i=0; i<indexes.length; i++){
+    const newVec = new Vec(i+1, indexes[i][0], indexes[i][1], space, colours[coloursIndex]);
+    vectors.push(newVec);
+    coloursIndex++;
+    coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+  }
+
+  return vectors;
 }
 
 function drawLine(p, i, lines){
@@ -130,23 +187,13 @@ export default function sketch(p) {
 
     switch(startAlgo){
       case "rand":
-        for(let i=0; i<nVectors; i++){
-          const randX = Math.floor(Math.random() * size);
-          const randY = Math.floor(Math.random() * size);
-          vectorsIndex++;
-          vectors[i] = new Vec(vectorsIndex, randX, randY, space, colours[coloursIndex]);
-          coloursIndex++;
-          coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
-        }
+        vectors = randomStartVectors(size, space, colours);
         break;
       case "circ":
-        const startIndexes = createCircularStartIndexes(nVectors, radius, space);
-        for(let i=0; i<startIndexes.length; i++){
-          const newVec = new Vec(i+1, startIndexes[i][0], startIndexes[i][1], space, colours[coloursIndex]);
-          vectors.push(newVec);
-          coloursIndex++;
-          coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
-        }
+        vectors = circularStartVectors(nVectors, radius, space, colours);
+        break;
+      case "edge":
+        vectors = edgeStartVectors(nVectors, space, colours);
         break;
       default:
         break;
