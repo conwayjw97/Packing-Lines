@@ -2,6 +2,8 @@
 
 Original idea from [this post](https://www.reddit.com/r/generative/comments/qs1vws/lines_packing_p5js/) by [Estienne](https://www.reddit.com/user/stntoulouse/).
 
+[Packing-Lines.webm](https://github.com/user-attachments/assets/52790d4a-c2cf-484e-93ed-b4d090df3b00)
+
 ## Try it out
 
 Hosted version: https://conwayjw97.github.io/Packing-Lines/
