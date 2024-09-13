@@ -13,7 +13,7 @@ Change the parameters in the url to customise the sketch:
 - size: [1 - Inf]
 
     Size of the grid to fill with lines (100 = 100x100 grid)
-    
+
 - speed: [1 - Inf]
 
     Number of lines to draw per frame
@@ -33,8 +33,10 @@ Change the parameters in the url to customise the sketch:
 - startAlgo: [rand, circ, diag]
 
     rand = Vectors start in random positions
+    
     circ = Vectors start along the radius of a circle in the centre of the grid
-    diag = Vectors start along diagonals of the grid
+    
+    diag = Vectors start along diagonals of the grid (this ignores the vectors param)
 
 - loop: [true, false]
 
