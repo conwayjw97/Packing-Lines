@@ -1,7 +1,7 @@
 const directions = [[-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1]];
 
 export default class Vec {
-    constructor(id, x, y, space, colour, dir=null){
+    constructor(id, x, y, space, colour, dir=null,step=null){
       this.id = id;
       this.start = [x, y];
       this.x = x;

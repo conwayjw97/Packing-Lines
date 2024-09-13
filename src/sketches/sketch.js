@@ -11,19 +11,48 @@ let loop = true;
 const radius = 10;
 const margin = 50;
 
-function moveVectors(vectors, lines) {
+function moveVectors(vectors, linesObject) {
   let allVectorsFinished = true;
+  
   for(const vector of vectors){
     if(!vector.isFinished) {
       allVectorsFinished = false;
       const line = vector.move();
       if(line){
-        lines.push(line);
+        if(vector.step in linesObject){
+          linesObject[vector.step].push(line);
+        } else {
+          linesObject[vector.step] = [line];
+        }
       }
     }
   }
 
   return (allVectorsFinished) ? true : false;
+}
+
+function createCleanupVectors(space, colours, linesObject){
+  // If any spaces are still empty, these vectors will fill them out
+  let vectorsIndex = 0;
+  let coloursIndex = 0;
+  // Set first cleanup vectors step as final vector step to begin rendering cleanup vectors only after all initial vectors
+  const startStep = Math.max(...Object.keys(linesObject).map(Number));
+  for(let i=0; i<space.length; i++){
+    for(let j=0; j<space[0].length; j++){
+      if(space[i][j][0] === 0){
+        vectorsIndex++;
+        const cleanupVector = new Vec(vectorsIndex, i, j, space, colours[coloursIndex]);
+        cleanupVector.step = startStep+1;
+        coloursIndex++;
+        coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+
+        let isFinished;
+        do{
+          isFinished = moveVectors([cleanupVector], linesObject);
+        } while(!isFinished);
+      }
+    }
+  }
 }
 
 function indexToPos(index, canvasSize) {
@@ -47,18 +76,19 @@ function randomStartVectors(size, space, colours){
 }
 
 function circularStartVectors(nVectors, r, space, colours) {
+  // Get indexes along circumference of circle centered inside the centre of the grid
   const centreX = Math.floor(space.length / 2);
   const centreY = Math.floor(space[0].length / 2);
   let indexes = [];
-
   const slice = 2 * Math.PI / nVectors;
   for (let i=0; i<nVectors; i++){
-      const angle = slice * i;
-      const newX = Math.round((centreX + r * Math.cos(angle)));
-      const newY = Math.round((centreY + r * Math.sin(angle)));
-      if(!indexes.includes([newX, newY])) indexes.push([newX, newY]);
+    const angle = slice * i;
+    const newX = Math.round((centreX + r * Math.cos(angle)));
+    const newY = Math.round((centreY + r * Math.sin(angle)));
+    if(!indexes.includes([newX, newY])) indexes.push([newX, newY]);
   }
   
+  // Create vectors
   let coloursIndex = 0;
   let vectors = [];
   for (let i=0; i<indexes.length; i++){
@@ -67,21 +97,24 @@ function circularStartVectors(nVectors, r, space, colours) {
     coloursIndex++;
     coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
   }
+  return vectors;
 }
 
 function edgeStartVectors(nVectors, space, colours) {
+  // Get all possible indexes on grid edges
   let availableIndexes = [];
   const xLim = space.length - 1;
   const yLim = space[0].length - 1;
 
   for(let i=0; i<space.length; i++){
     for(let j=0; j<space[0].length; j++){
-      if(i == 0 || j == 0 || i == xLim || j == yLim){
+      if(i === 0 || j === 0 || i === xLim || j === yLim){
         availableIndexes.push([i, j]);
       }
     }
   }
 
+  // Get indexes for n vectors, starting from middle of indexes array and going both directions
   let indexes = [];
   let i, arrayLen;
   if(nVectors < indexes.length) {
@@ -97,6 +130,7 @@ function edgeStartVectors(nVectors, space, colours) {
     if (i < arrayLen) indexes.push(availableIndexes[i++]);
   }
 
+  // Create vectors from indexes
   let coloursIndex = 0;
   let vectors = [];
   for (let i=0; i<indexes.length; i++){
@@ -133,7 +167,6 @@ function interpolateColours(colour1, colour2, percent) {
   const r1 = parseInt(colour1.substring(1, 3), 16);
   const g1 = parseInt(colour1.substring(3, 5), 16);
   const b1 = parseInt(colour1.substring(5, 7), 16);
-
   const r2 = parseInt(colour2.substring(1, 3), 16);
   const g2 = parseInt(colour2.substring(3, 5), 16);
   const b2 = parseInt(colour2.substring(5, 7), 16);
@@ -149,7 +182,7 @@ function interpolateColours(colour1, colour2, percent) {
 }
 
 export default function sketch(p) {
-  let space, vectors, lines, timer, pause, lineStep, reverse, colours;
+  let space, vectors, linesObject, flattenedLinesArray, timer, pause, lineStep, reverse, colours;
   let canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
 
   p.updateWithProps = props => {
@@ -168,7 +201,8 @@ export default function sketch(p) {
     p.createCanvas(canvasSize, canvasSize, p.P2D);
     space = Array.from({length: size}).map(() => Array.from({length: size}).fill([0, undefined]));
     vectors = [];
-    lines = [];
+    linesObject = {};
+    flattenedLinesArray = [];
     timer = 0;
     pause = false;
     lineStep = 0;
@@ -201,24 +235,13 @@ export default function sketch(p) {
   
     let isFinished;
     do{
-      isFinished = moveVectors(vectors, lines);
+      isFinished = moveVectors(vectors, linesObject);
     } while(!isFinished);
   
-    // Remaining start position vectors
-    for(let i=0; i<space.length; i++){
-      for(let j=0; j<space[0].length; j++){
-        if(space[i][j][0] === 0){
-          vectorsIndex++;
-          const cleanupVector = new Vec(vectorsIndex, i, j, space, colours[coloursIndex]);
-          coloursIndex++;
-          coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
-  
-          let isFinished;
-          do{
-            isFinished = moveVectors([cleanupVector], lines);
-          } while(!isFinished);
-        }
-      }
+    createCleanupVectors(space, colours, linesObject);
+
+    for(let step in linesObject){
+      flattenedLinesArray = flattenedLinesArray.concat(linesObject[step])
     }
   
     p.background(0);
@@ -240,15 +263,15 @@ export default function sketch(p) {
         pause = true;
         timer = p.millis();
       } 
-      if(lineStep > lines.length){
-        lineStep = lines.length;
+      if(lineStep > flattenedLinesArray.length){
+        lineStep = flattenedLinesArray.length;
         reverse = true;
         pause = true;
         timer = p.millis();
       }
 
       for(let i=0; i<lineStep; i++){
-        drawLine(p, i, lines);
+        drawLine(p, i, flattenedLinesArray);
       }
 
       if(!reverse){
