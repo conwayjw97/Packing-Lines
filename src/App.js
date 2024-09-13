@@ -32,7 +32,7 @@ function App() {
     initSearchParam("colour1", "ff0000", setColour1);
     initSearchParam("colour2", "7d0000", setColour2);
     initSearchParam("startAlgo", "rand", setStartAlgo);
-    initSearchParam("loop", "true", setLoop);
+    initSearchParam("loop", "false", setLoop);
   });
 
   return (

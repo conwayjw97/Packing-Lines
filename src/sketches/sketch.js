@@ -100,41 +100,24 @@ function circularStartVectors(nVectors, r, space, colours) {
   return vectors;
 }
 
-function edgeStartVectors(nVectors, space, colours) {
-  // Get all possible indexes on grid edges
-  let availableIndexes = [];
-  const xLim = space.length - 1;
-  const yLim = space[0].length - 1;
-
-  for(let i=0; i<space.length; i++){
-    for(let j=0; j<space[0].length; j++){
-      if(i === 0 || j === 0 || i === xLim || j === yLim){
-        availableIndexes.push([i, j]);
-      }
-    }
-  }
-
-  // Get indexes for n vectors, starting from middle of indexes array and going both directions
-  let indexes = [];
-  let i, arrayLen;
-  if(nVectors < indexes.length) {
-    arrayLen = nVectors;
-  } else {
-    arrayLen = availableIndexes.length;
-  }
-  i = Math.ceil(arrayLen/2);
-  let j = i - 1;
-
-  while (j >= 0) {
-    indexes.push(availableIndexes[j--]);
-    if (i < arrayLen) indexes.push(availableIndexes[i++]);
-  }
-
-  // Create vectors from indexes
+function diagonalStartVectors(space, colours){
   let coloursIndex = 0;
   let vectors = [];
-  for (let i=0; i<indexes.length; i++){
-    const newVec = new Vec(i+1, indexes[i][0], indexes[i][1], space, colours[coloursIndex]);
+  let vectorIndex = 0;
+
+  // Create vectors on diagonal 1
+  for(let i=0, j=0; i<space.length, j<space[0].length; i++, j++){
+    const newVec = new Vec(vectorIndex, i, j, space, colours[coloursIndex]);
+    vectorIndex++;
+    vectors.push(newVec);
+    coloursIndex++;
+    coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+  }
+
+  // Create vectors on diagonal 2
+  for(let i=space.length-1, j=0; i>0, j<space[0].length; i--, j++){
+    const newVec = new Vec(vectorIndex, i, j, space, colours[coloursIndex]);
+    vectorIndex++;
     vectors.push(newVec);
     coloursIndex++;
     coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
@@ -226,8 +209,8 @@ export default function sketch(p) {
       case "circ":
         vectors = circularStartVectors(nVectors, radius, space, colours);
         break;
-      case "edge":
-        vectors = edgeStartVectors(nVectors, space, colours);
+      case "diag":
+        vectors = diagonalStartVectors(space, colours);
         break;
       default:
         break;
