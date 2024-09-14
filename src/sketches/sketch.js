@@ -4,12 +4,49 @@ let size = 50;
 let speed = 20;
 let startAlgo = "rand";
 let nVectors = 50;
+let coloursArgs = "ffffff-ff0000-7d0000";
 let strokeWeight = 3;
-let colour1 = "#ffffff";
-let colour2 = "#ffffff";
 let loop = true;
 const radius = 10;
 const margin = 50;
+
+function populateColoursArray(colours) {
+  if (coloursArgs) {
+    const coloursList = coloursArgs.split("-");
+    if (coloursList.length > 1) {
+      const percent = 1 / (nVectors / coloursList.length);
+      for (let i = 0; i < coloursList.length - 1; i++) {
+        let j = 0;
+        while (j <= 1) {
+          const colour1 = "#" + coloursList[i];
+          const colour2 = "#" + coloursList[i + 1];
+          colours.push(interpolateColours(colour1, colour2, j));
+          j += percent;
+        }
+      }
+    } else {
+      colours = ["#" + coloursArgs];
+    }
+  }
+  return colours;
+}
+
+function createInitialVectors(vectors, space, colours) {
+  switch (startAlgo) {
+    case "rand":
+      vectors = randomStartVectors(size, space, colours);
+      break;
+    case "circ":
+      vectors = circularStartVectors(nVectors, radius, space, colours);
+      break;
+    case "diag":
+      vectors = diagonalStartVectors(space, colours);
+      break;
+    default:
+      break;
+  }
+  return vectors;
+}
 
 function moveVectors(vectors, linesObject) {
   let allVectorsFinished = true;
@@ -31,7 +68,14 @@ function moveVectors(vectors, linesObject) {
   return (allVectorsFinished) ? true : false;
 }
 
-function createCleanupVectors(space, colours, linesObject){
+function moveInitialVectors(vectors, linesObject) {
+  let isFinished;
+  do {
+    isFinished = moveVectors(vectors, linesObject);
+  } while (!isFinished);
+}
+
+function moveCleanupVectors(space, colours, linesObject){
   // If any spaces are still empty, these vectors will fill them out
   let vectorsIndex = 0;
   let coloursIndex = 0;
@@ -173,8 +217,7 @@ export default function sketch(p) {
     if (props.speed) speed = Number(props.speed);
     if (props.nVectors) nVectors = Number(props.nVectors);
     if (props.lineWidth) strokeWeight = Number(props.lineWidth);
-    if (props.colour1) colour1 = "#" + props.colour1;
-    if (props.colour2) colour2 = "#" + props.colour2;
+    if (props.colours) coloursArgs = props.colours;
     if (props.startAlgo) startAlgo = props.startAlgo;
     if (props.loop) loop = (props.loop === "true");
     p.setup();
@@ -192,36 +235,10 @@ export default function sketch(p) {
     reverse = false;
     colours = [];
 
-    const percent = 1 / nVectors;
-    let i = 0;
-    while(i <= 1){
-      colours.push(interpolateColours(colour1, colour2, i));
-      i += percent;
-    }
-
-    let coloursIndex = 0;
-    let vectorsIndex = 0;
-
-    switch(startAlgo){
-      case "rand":
-        vectors = randomStartVectors(size, space, colours);
-        break;
-      case "circ":
-        vectors = circularStartVectors(nVectors, radius, space, colours);
-        break;
-      case "diag":
-        vectors = diagonalStartVectors(space, colours);
-        break;
-      default:
-        break;
-    }
-  
-    let isFinished;
-    do{
-      isFinished = moveVectors(vectors, linesObject);
-    } while(!isFinished);
-  
-    createCleanupVectors(space, colours, linesObject);
+    colours = populateColoursArray(colours);
+    vectors = createInitialVectors(vectors, space, colours);
+    moveInitialVectors(vectors, linesObject);
+    moveCleanupVectors(space, colours, linesObject);
 
     for(let step in linesObject){
       flattenedLinesArray = flattenedLinesArray.concat(linesObject[step])
@@ -269,3 +286,4 @@ export default function sketch(p) {
     }
   };
 }
+

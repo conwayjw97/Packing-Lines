@@ -9,8 +9,7 @@ function App() {
   const [speed, setSpeed] = useState();
   const [nVectors, setNVectors] = useState();
   const [lineWidth, setLineWidth] = useState();
-  const [colour1, setColour1] = useState();
-  const [colour2, setColour2] = useState();
+  const [colours, setColours] = useState();
   const [startAlgo, setStartAlgo] = useState();
   const [loop, setLoop] = useState();
 
@@ -27,10 +26,9 @@ function App() {
   useEffect(() => {
     initSearchParam("size", 100, setSize);
     initSearchParam("speed", 50, setSpeed);
-    initSearchParam("vectors", 50, setNVectors);
+    initSearchParam("vectors", 100, setNVectors);
     initSearchParam("lineWidth", 3, setLineWidth);
-    initSearchParam("colour1", "ff0000", setColour1);
-    initSearchParam("colour2", "7d0000", setColour2);
+    initSearchParam("colours", "ffffff-ff0000-7d0000", setColours);
     initSearchParam("startAlgo", "rand", setStartAlgo);
     initSearchParam("loop", "false", setLoop);
   });
@@ -43,8 +41,7 @@ function App() {
         speed={speed} 
         nVectors={nVectors} 
         lineWidth={lineWidth} 
-        colour1={colour1}
-        colour2={colour2}
+        colours={colours}
         startAlgo={startAlgo}
         loop={loop}
       />

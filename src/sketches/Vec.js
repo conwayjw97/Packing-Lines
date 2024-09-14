@@ -38,10 +38,13 @@ export default class Vec {
       const spaceToCheck2 = this.space[space2[0]][space2[1]];
       const space1IsTaken = spaceToCheck1[0] !== 0;
       const space2IsTaken = spaceToCheck2[0] !== 0;
+      // Check both 2 spaces ahead are occupied
       if (space1IsTaken && space2IsTaken){
         const spacesAreSameVectors = spaceToCheck1[0] === spaceToCheck2[0];
+        // Check both 2 spaces are occupied by the same vector
         if(spacesAreSameVectors){
           const spacesAreCoveredInSequence = Math.abs(spaceToCheck1[1] - spaceToCheck2[1]) === 1;
+          // Check both 2 spaces were covered one after the other by the same vector
           if(spacesAreCoveredInSequence){
             return true;
           }

@@ -9,10 +9,10 @@ Original idea from [this post](https://www.reddit.com/r/generative/comments/qs1v
 Hosted version: https://conwayjw97.github.io/Packing-Lines/
 
 
-Change the parameters in the url to customise the sketch:
+Change the following parameters in the url to customise the sketch:
 - size: [1 - Inf]
 
-    Size of the grid to fill with lines (100 = 100x100 grid)
+    Size of the grid to fill with lines (100 = 100x100 grid). N.B. you should adjust speed along with this to smooth out the rendering animation
 
 - speed: [1 - Inf]
 
