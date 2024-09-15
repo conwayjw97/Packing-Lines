@@ -14,12 +14,12 @@ function populateColoursArray(colours) {
   if (coloursArgs) {
     const coloursList = coloursArgs.split("-");
     if (coloursList.length > 1) {
-      const percent = 1 / (nVectors / coloursList.length);
-      for (let i = 0; i < coloursList.length - 1; i++) {
+      const percent = 1 / (nVectors / (coloursList.length-1));
+      for (let i = 0; i < coloursList.length-1; i++) {
         let j = 0;
         while (j <= 1) {
           const colour1 = "#" + coloursList[i];
-          const colour2 = "#" + coloursList[i + 1];
+          const colour2 = "#" + coloursList[i+1];
           colours.push(interpolateColours(colour1, colour2, j));
           j += percent;
         }
@@ -225,6 +225,7 @@ export default function sketch(p) {
 
   p.setup = () => {
     p.createCanvas(canvasSize, canvasSize, p.P2D);
+
     space = Array.from({length: size}).map(() => Array.from({length: size}).fill([0, undefined]));
     vectors = [];
     linesObject = {};
