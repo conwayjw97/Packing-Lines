@@ -30,7 +30,7 @@ Change the following parameters in the url to customise the sketch:
     
     Hexadecimal RGB values of two colours, each vector will be assigned a colour interpolated from between these two
 
-- startAlgo: [rand, circ, diag]
+- start: [rand, circ, diag]
 
     rand = Vectors start in random positions
     

@@ -2,7 +2,7 @@ import Vec from "./Vec";
 
 let size = 50;
 let speed = 20;
-let startAlgo = "rand";
+let start = "rand";
 let nVectors = 50;
 let coloursArgs = "ffffff-ff0000-7d0000";
 let strokeWeight = 3;
@@ -33,7 +33,7 @@ function populateColoursArray(colours) {
 }
 
 function createInitialVectors(vectors, space, colours) {
-  switch (startAlgo) {
+  switch (start) {
     case "rand":
       vectors = randomStartVectors(size, space, colours);
       break;
@@ -217,7 +217,7 @@ export default function sketch(p) {
     if (props.nVectors) nVectors = Number(props.nVectors);
     if (props.lineWidth) strokeWeight = Number(props.lineWidth);
     if (props.colours) coloursArgs = props.colours;
-    if (props.startAlgo) startAlgo = props.startAlgo;
+    if (props.start) start = props.start;
     if (props.fill) fill = (props.fill === "true");
     if (props.loop) loop = (props.loop === "true");
     p.setup();
