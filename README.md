@@ -36,6 +36,10 @@ Change the following parameters in the url to customise the sketch:
     
     diag = Vectors start along diagonals of the grid (this ignores the vectors param)
 
+- fill: [true, false]
+
+    Toggle whether to create cleanup vectors to fill the still empty spaces once all the initial vectors have traversed the grid
+
 - loop: [true, false]
 
     Toggle animation looping

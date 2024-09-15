@@ -11,6 +11,7 @@ function App() {
   const [lineWidth, setLineWidth] = useState();
   const [colours, setColours] = useState();
   const [startAlgo, setStartAlgo] = useState();
+  const [fill, setFill] = useState();
   const [loop, setLoop] = useState();
 
   const initSearchParam = (param, initValue, setState) => {
@@ -30,6 +31,7 @@ function App() {
     initSearchParam("lineWidth", 3, setLineWidth);
     initSearchParam("colours", "ffffff-ff0000-7d0000", setColours);
     initSearchParam("startAlgo", "circ", setStartAlgo);
+    initSearchParam("fill", "true", setFill);
     initSearchParam("loop", "false", setLoop);
   });
 
@@ -43,6 +45,7 @@ function App() {
         lineWidth={lineWidth} 
         colours={colours}
         startAlgo={startAlgo}
+        fill={fill}
         loop={loop}
       />
     </div>

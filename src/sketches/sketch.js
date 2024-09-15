@@ -6,6 +6,7 @@ let startAlgo = "rand";
 let nVectors = 50;
 let coloursArgs = "ffffff-ff0000-7d0000";
 let strokeWeight = 3;
+let fill = true;
 let loop = true;
 const radius = 10;
 const margin = 50;
@@ -217,6 +218,7 @@ export default function sketch(p) {
     if (props.lineWidth) strokeWeight = Number(props.lineWidth);
     if (props.colours) coloursArgs = props.colours;
     if (props.startAlgo) startAlgo = props.startAlgo;
+    if (props.fill) fill = (props.fill === "true");
     if (props.loop) loop = (props.loop === "true");
     p.setup();
   };
@@ -237,7 +239,7 @@ export default function sketch(p) {
     colours = populateColoursArray(colours);
     vectors = createInitialVectors(vectors, space, colours);
     moveInitialVectors(vectors, linesObject);
-    createCleanupVectors(space, colours, linesObject);
+    if(fill) createCleanupVectors(space, colours, linesObject);
 
     for (let step in linesObject) {
       flattenedLinesArray = flattenedLinesArray.concat(linesObject[step])
