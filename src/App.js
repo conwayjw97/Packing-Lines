@@ -29,7 +29,7 @@ function App() {
     initSearchParam("vectors", 100, setNVectors);
     initSearchParam("lineWidth", 3, setLineWidth);
     initSearchParam("colours", "ffffff-ff0000-7d0000", setColours);
-    initSearchParam("startAlgo", "rand", setStartAlgo);
+    initSearchParam("startAlgo", "circ", setStartAlgo);
     initSearchParam("loop", "false", setLoop);
   });
 

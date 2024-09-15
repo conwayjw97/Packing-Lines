@@ -14,12 +14,12 @@ function populateColoursArray(colours) {
   if (coloursArgs) {
     const coloursList = coloursArgs.split("-");
     if (coloursList.length > 1) {
-      const percent = 1 / (nVectors / (coloursList.length-1));
-      for (let i = 0; i < coloursList.length-1; i++) {
+      const percent = 1 / (nVectors / (coloursList.length - 1));
+      for (let i = 0; i < coloursList.length - 1; i++) {
         let j = 0;
         while (j <= 1) {
           const colour1 = "#" + coloursList[i];
-          const colour2 = "#" + coloursList[i+1];
+          const colour2 = "#" + coloursList[i + 1];
           colours.push(interpolateColours(colour1, colour2, j));
           j += percent;
         }
@@ -50,13 +50,13 @@ function createInitialVectors(vectors, space, colours) {
 
 function moveVectors(vectors, linesObject) {
   let allVectorsFinished = true;
-  
-  for(const vector of vectors){
-    if(!vector.isFinished) {
+
+  for (const vector of vectors) {
+    if (!vector.isFinished) {
       allVectorsFinished = false;
       const line = vector.move();
-      if(line){
-        if(vector.step in linesObject){
+      if (line) {
+        if (vector.step in linesObject) {
           linesObject[vector.step].push(line);
         } else {
           linesObject[vector.step] = [line];
@@ -75,45 +75,43 @@ function moveInitialVectors(vectors, linesObject) {
   } while (!isFinished);
 }
 
-function moveCleanupVectors(space, colours, linesObject){
+function createCleanupVectors(space, colours, linesObject) {
   // If any spaces are still empty, these vectors will fill them out
   let vectorsIndex = 0;
-  let coloursIndex = 0;
   // Set first cleanup vectors step as final vector step to begin rendering cleanup vectors only after all initial vectors
   const startStep = Math.max(...Object.keys(linesObject).map(Number));
-  for(let i=0; i<space.length; i++){
-    for(let j=0; j<space[0].length; j++){
-      if(space[i][j][0] === 0){
+  for (let i = 0; i < space.length; i++) {
+    for (let j = 0; j < space[0].length; j++) {
+      if (space[i][j][0] === 0) {
         vectorsIndex++;
+        const coloursIndex = Math.floor(Math.random() * colours.length);
         const cleanupVector = new Vec(vectorsIndex, i, j, space, colours[coloursIndex]);
-        cleanupVector.step = startStep+1;
-        coloursIndex++;
-        coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+        cleanupVector.step = startStep + 1;
 
         let isFinished;
-        do{
+        do {
           isFinished = moveVectors([cleanupVector], linesObject);
-        } while(!isFinished);
+        } while (!isFinished);
       }
     }
   }
 }
 
 function indexToPos(index, canvasSize) {
-  return 20 + ((canvasSize-40)/(size-1)) * index;
+  return 20 + ((canvasSize - 40) / (size - 1)) * index;
 }
 
-function randomStartVectors(size, space, colours){
+function randomStartVectors(size, space, colours) {
   let coloursIndex = 0;
   let vectors = [];
 
-  for(let i=0; i<nVectors; i++){
+  for (let i = 0; i < nVectors; i++) {
     const randX = Math.floor(Math.random() * size);
     const randY = Math.floor(Math.random() * size);
-    const newVec = new Vec(i+1, randX, randY, space, colours[coloursIndex]);
+    const newVec = new Vec(i + 1, randX, randY, space, colours[coloursIndex]);
     vectors.push(newVec);
     coloursIndex++;
-    coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+    coloursIndex = (coloursIndex === colours.length) ? 0 : coloursIndex;
   }
 
   return vectors;
@@ -125,53 +123,53 @@ function circularStartVectors(nVectors, r, space, colours) {
   const centreY = Math.floor(space[0].length / 2);
   let indexes = [];
   const slice = 2 * Math.PI / nVectors;
-  for (let i=0; i<nVectors; i++){
+  for (let i = 0; i < nVectors; i++) {
     const angle = slice * i;
     const newX = Math.round((centreX + r * Math.cos(angle)));
     const newY = Math.round((centreY + r * Math.sin(angle)));
-    if(!indexes.includes([newX, newY])) indexes.push([newX, newY]);
+    if (!indexes.includes([newX, newY])) indexes.push([newX, newY]);
   }
-  
+
   // Create vectors
   let coloursIndex = 0;
   let vectors = [];
-  for (let i=0; i<indexes.length; i++){
-    const newVec = new Vec(i+1, indexes[i][0], indexes[i][1], space, colours[coloursIndex]);
+  for (let i = 0; i < indexes.length; i++) {
+    const newVec = new Vec(i + 1, indexes[i][0], indexes[i][1], space, colours[coloursIndex]);
     vectors.push(newVec);
     coloursIndex++;
-    coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+    coloursIndex = (coloursIndex === colours.length) ? 0 : coloursIndex;
   }
   return vectors;
 }
 
-function diagonalStartVectors(space, colours){
+function diagonalStartVectors(space, colours) {
   let coloursIndex = 0;
   let vectors = [];
   let vectorIndex = 0;
 
   // Create vectors on diagonal 1
-  for(let i=0, j=0; i<space.length, j<space[0].length; i++, j++){
+  for (let i = 0, j = 0; i < space.length, j < space[0].length; i++, j++) {
     const newVec = new Vec(vectorIndex, i, j, space, colours[coloursIndex]);
     vectorIndex++;
     vectors.push(newVec);
     coloursIndex++;
-    coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+    coloursIndex = (coloursIndex === colours.length) ? 0 : coloursIndex;
   }
 
   // Create vectors on diagonal 2
-  for(let i=space.length-1, j=0; i>0, j<space[0].length; i--, j++){
+  for (let i = space.length - 1, j = 0; i > 0, j < space[0].length; i--, j++) {
     const newVec = new Vec(vectorIndex, i, j, space, colours[coloursIndex]);
     vectorIndex++;
     vectors.push(newVec);
     coloursIndex++;
-    coloursIndex = (coloursIndex === colours.length) ?  0 : coloursIndex;
+    coloursIndex = (coloursIndex === colours.length) ? 0 : coloursIndex;
   }
 
   return vectors;
 }
 
-function drawLine(p, i, lines){
-  if(i < lines.length){
+function drawLine(p, i, lines) {
+  if (i < lines.length) {
     const line = lines[i];
     const x1 = line[0];
     const y1 = line[1];
@@ -181,9 +179,9 @@ function drawLine(p, i, lines){
 
     p.stroke(colour);
     p.line(
-      indexToPos(x1, p.width), 
-      indexToPos(y1, p.width), 
-      indexToPos(x2, p.width), 
+      indexToPos(x1, p.width),
+      indexToPos(y1, p.width),
+      indexToPos(x2, p.width),
       indexToPos(y2, p.width)
     );
   }
@@ -226,7 +224,7 @@ export default function sketch(p) {
   p.setup = () => {
     p.createCanvas(canvasSize, canvasSize, p.P2D);
 
-    space = Array.from({length: size}).map(() => Array.from({length: size}).fill([0, undefined]));
+    space = Array.from({ length: size }).map(() => Array.from({ length: size }).fill([0, undefined]));
     vectors = [];
     linesObject = {};
     flattenedLinesArray = [];
@@ -239,12 +237,12 @@ export default function sketch(p) {
     colours = populateColoursArray(colours);
     vectors = createInitialVectors(vectors, space, colours);
     moveInitialVectors(vectors, linesObject);
-    moveCleanupVectors(space, colours, linesObject);
+    createCleanupVectors(space, colours, linesObject);
 
-    for(let step in linesObject){
+    for (let step in linesObject) {
       flattenedLinesArray = flattenedLinesArray.concat(linesObject[step])
     }
-  
+
     p.background(0);
     p.strokeWeight(strokeWeight);
   }
@@ -253,36 +251,36 @@ export default function sketch(p) {
     canvasSize = (p.windowHeight < p.windowWidth) ? p.windowHeight - margin : p.windowWidth - margin;
     p.resizeCanvas(canvasSize, canvasSize)
   }
-  
+
   p.draw = () => {
-    if(!pause){
+    if (!pause) {
       p.clear();
-      
-      if(lineStep < 0){
+
+      if (lineStep < 0) {
         lineStep = 0;
         reverse = false;
         pause = true;
         timer = p.millis();
-      } 
-      if(lineStep > flattenedLinesArray.length){
+      }
+      if (lineStep > flattenedLinesArray.length) {
         lineStep = flattenedLinesArray.length;
         reverse = true;
         pause = true;
         timer = p.millis();
       }
 
-      for(let i=0; i<lineStep; i++){
+      for (let i = 0; i < lineStep; i++) {
         drawLine(p, i, flattenedLinesArray);
       }
 
-      if(!reverse){
+      if (!reverse) {
         lineStep += speed;
       } else {
         lineStep -= speed;
       }
     }
 
-    if(pause && p.millis() >= 1000+timer && loop) {
+    if (pause && p.millis() >= 1000 + timer && loop) {
       pause = false;
     }
   };
