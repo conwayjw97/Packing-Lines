@@ -26,9 +26,9 @@ Change the following parameters in the url to customise the sketch:
 
     Width of rendered lines
 
-- colour1/colour2: [000000 - ffffff] 
+- colours: [000000 - ffffff] 
     
-    Hexadecimal RGB values of two colours, each vector will be assigned a colour interpolated from between these two
+    Dash separated list of hexadecimal RGB values of colours, each vector will be assigned a colour interpolated from between these colours
 
 - start: [rand, circ, diag]
 
